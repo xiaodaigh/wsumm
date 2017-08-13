@@ -18,7 +18,7 @@ func (c *Conn) WriteJSON(v interface{}) error {
 
 func (c Conn) WriteMessage(messageType int, data []byte) error {
 	c.writeSemaphore <- true
-	res := c.Conn.WriteMessage(messageType data)
+	res := c.Conn.WriteMessage(messageType, data)
 	<-c.writeSemaphore
 	return res
 }
