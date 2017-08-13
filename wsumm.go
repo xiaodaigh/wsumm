@@ -6,7 +6,9 @@ package wsumm
 
 import (
 	"github.com/gorilla/websocket"
+	"log"
 	"net/http"
+	"time"
 )
 
 type Conn struct {
@@ -30,12 +32,17 @@ func (c *Conn) createReadSemaphore() {
 }
 
 func (c *Conn) WriteJSON(v interface{}) error {
+	log.SetPrefix("wsumm writing to channel: ")
 	if c.writeSemaphore == nil {
+		log.Println("yes it's null so initilising")
 		c.createWriteSemaphore()
+		log.Println(c.writeSemaphore == nil)
 	}
+	then := time.Now()
 	c.writeSemaphore <- true
 	defer func() {
 		<-c.writeSemaphore
+		log.Println(time.Since(then))
 	}()
 
 	res := c.Conn.WriteJSON(v)
@@ -44,12 +51,17 @@ func (c *Conn) WriteJSON(v interface{}) error {
 }
 
 func (c *Conn) WriteMessage(messageType int, data []byte) error {
+	log.SetPrefix("wsumm writing to channel: ")
 	if c.writeSemaphore == nil {
+		log.Println("yes it's null so initilising")
 		c.createWriteSemaphore()
+		log.Println(c.writeSemaphore == nil)
 	}
+	then := time.Now()
 	c.writeSemaphore <- true
 	defer func() {
 		<-c.writeSemaphore
+		log.Println(time.Since(then))
 	}()
 
 	res := c.Conn.WriteMessage(messageType, data)
