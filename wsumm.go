@@ -1,3 +1,7 @@
+//package wsumm is a collection of simple helper functions to make gorilla/websocket's WriteMessage not panicable.
+//Gorilla websocket's WriteMessage function can not be run at the same by two functions, otherwise
+//it will panic, so I've create a semaphore on the write functions so that only one can run
+//and it block the execution of the other
 package wsumm
 
 import (
@@ -30,8 +34,12 @@ func (c *Conn) WriteJSON(v interface{}) error {
 		c.createWriteSemaphore()
 	}
 	c.writeSemaphore <- true
+	defer func() {
+		<-c.writeSemaphore
+	}()
+
 	res := c.Conn.WriteJSON(v)
-	<-c.writeSemaphore
+
 	return res
 }
 
@@ -40,8 +48,12 @@ func (c *Conn) WriteMessage(messageType int, data []byte) error {
 		c.createWriteSemaphore()
 	}
 	c.writeSemaphore <- true
+	defer func() {
+		<-c.writeSemaphore
+	}()
+
 	res := c.Conn.WriteMessage(messageType, data)
-	<-c.writeSemaphore
+
 	return res
 }
 
