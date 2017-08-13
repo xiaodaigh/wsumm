@@ -30,7 +30,7 @@ func (c *Conn) createReadSemaphore() {
 }
 
 func (c *Conn) WriteJSON(v interface{}) error {
-	if c.readSemaphore == nil {
+	if c.writeSemaphore == nil {
 		c.createWriteSemaphore()
 	}
 	c.writeSemaphore <- true
@@ -44,7 +44,7 @@ func (c *Conn) WriteJSON(v interface{}) error {
 }
 
 func (c *Conn) WriteMessage(messageType int, data []byte) error {
-	if c.readSemaphore == nil {
+	if c.writeSemaphore == nil {
 		c.createWriteSemaphore()
 	}
 	c.writeSemaphore <- true
