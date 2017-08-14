@@ -1,6 +1,6 @@
  # wsumm
  
- Wrapper functions to make my gorilla/websocket's WriteMessage be blocking if another function was running it 
+Wrapper functions to make gorilla/websocket's Write*Functions* i.e. WriteMessage and WriteJSON be blocking if another Write*function* of the same channel is being run.
 
 # Installation
 In command line
